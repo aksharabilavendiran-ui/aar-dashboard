@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root { height: 100%; }
+body { @apply bg-zinc-950 text-zinc-200 font-sans antialiased; }
+:focus-visible { outline: 2px solid #F59E0B; outline-offset: 2px; }
+.panel { @apply rounded border border-zinc-800 bg-zinc-900; }
+.panel-title { @apply font-head text-lg font-semibold text-zinc-100; }
+.btn { @apply inline-flex items-center gap-2 rounded border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-sm font-medium text-zinc-100 hover:bg-zinc-700 disabled:opacity-50; }
+.btn-primary { @apply border-friendly bg-friendly/15 text-friendly hover:bg-friendly/25; }
+.field { @apply w-full rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

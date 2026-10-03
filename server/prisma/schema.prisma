@@ -1,0 +1,66 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Trainee {
+  id        String    @id @default(uuid())
+  serviceId String    @unique
+  name      String
+  rank      String
+  unit      String
+  createdAt DateTime  @default(now())
+  sessions  Session[]
+}
+
+model Session {
+  id                  String      @id @default(uuid())
+  traineeId           String
+  trainee             Trainee     @relation(fields: [traineeId], references: [id])
+  scenarioName        String
+  environmentType     String // "URBAN", "RURAL", "DESERT"
+  weatherCondition    String // "CLEAR", "HEAVY_RAIN", "FOG", "NIGHT"
+  threatType          String // "SINGLE_RECON", "FPV_KAMIKAZE", "SWARM"
+  startTime           DateTime    @default(now())
+  endTime             DateTime?
+  totalScore          Int         @default(0)
+  timeToDetectMs      Int         @default(0)
+  classificationAcc   Float       @default(0) // 0-100
+  mitigationAccuracy  Float       @default(0) // 0-100
+  collateralRiskScore Float       @default(0) // 0-10
+  telemetryLogs       Telemetry[]
+  events              EventLog[]
+
+  @@index([traineeId])
+}
+
+model EventLog {
+  id            String  @id @default(uuid())
+  sessionId     String
+  session       Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  timestampMs   Int
+  eventType     String // "DETECTION", "CLASSIFICATION", "ENGAGEMENT"
+  targetType    String // "HOSTILE_FPV", "FRIENDLY_RECON", "CIVILIAN_COMMERCIAL"
+  chosenAction  String // "RF_JAM", "KINETIC_FIRE", "NET_INTERCEPT", "GPS_SPOOF", "NONE"
+  isCorrect     Boolean
+  penaltyPoints Int     @default(0)
+  details       Json
+
+  @@index([sessionId, timestampMs])
+}
+
+model Telemetry {
+  id          String  @id @default(uuid())
+  sessionId   String
+  session     Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  timestampMs Int
+  droneCount  Int
+  stressIndex Float // 0.0 to 1.0
+  rawMetrics  Json
+
+  @@index([sessionId, timestampMs])
+}
